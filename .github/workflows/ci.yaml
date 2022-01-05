@@ -14,20 +14,11 @@ jobs:
 
       - name: Docker meta
         id: meta
-        if: ! startsWith(github.ref, 'refs/tags/')
-        uses: docker/metadata-action@v3
-        with:
-          tags: |
-            type=sha,prefix={{branch}}-
-          images: teracyhq-incubator/app
-
-      - name: Docker meta
-        id: meta
-        if: startsWith(github.ref, 'refs/tags/')
         uses: docker/metadata-action@v3
         with:
           tags: |
             type=semver,pattern={{version}}
+            type=ref,suffix=-{{sha}},event=branch
           images: teracyhq-incubator/app
 
       # - name: Dump context
