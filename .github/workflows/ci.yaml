@@ -1,0 +1,26 @@
+name: ci
+
+on:
+  workflow_dispatch:
+  push:
+  pull_request:
+
+jobs:
+  docker:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          tags: |
+            type=semver,pattern={{version}}
+            type=sha,prefix={{branch}}-
+          images: teracyhq-incubator/app
+
+      # - name: Dump context
+      #   if: always()
+      #   uses: crazy-max/ghaction-dump-context@v1
