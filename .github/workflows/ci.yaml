@@ -55,6 +55,14 @@ jobs:
           tags: ${{ steps.docker_meta.outputs.tags }}
           labels: ${{ steps.docker_meta.outputs.labels }}
 
+      - name: Install Cosign
+        if: github.event_name != 'pull_request' && env.COSIGN_KEY != ''
+        env:
+          COSIGN_KEY: ${{secrets.COSIGN_KEY}}
+        uses: sigstore/cosign-installer@main
+        with:
+          cosign-release: 'v1.4.1'
+
       - name: Sign image with a key
         if: github.event_name != 'pull_request' && env.COSIGN_KEY != ''
         run: |
