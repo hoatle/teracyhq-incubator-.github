@@ -56,21 +56,21 @@ jobs:
           labels: ${{ steps.docker_meta.outputs.labels }}
 
       - name: Install Cosign
-        if: github.event_name != 'pull_request' && env.COSIGN_KEY != ''
+        if: github.event_name != 'pull_request' && env.COSIGN_KEY_BASE64 != ''
         env:
-          COSIGN_KEY: ${{secrets.COSIGN_KEY}}
+          COSIGN_KEY_BASE64: ${{secrets.COSIGN_KEY_BASE64}}
         uses: sigstore/cosign-installer@main
         with:
           cosign-release: 'v1.4.1'
 
       - name: Sign image with a key
-        if: github.event_name != 'pull_request' && env.COSIGN_KEY != ''
+        if: github.event_name != 'pull_request' && env.COSIGN_KEY_BASE64 != ''
         run: |
-          echo ${COSIGN_KEY} > /tmp/my_cosign.key && \
-          cosign sign --key /tmp/my_cosign.key ${TAGS}
+          echo ${COSIGN_KEY_BASE64} | base64 --decode > /tmp/cosign.key && \
+          cosign sign --key /tmp/cosign.key ${TAGS}
         env:
           TAGS: ${{ steps.docker_meta.outputs.tags }}
-          COSIGN_KEY: ${{secrets.COSIGN_KEY}}
+          COSIGN_KEY_BASE64: ${{secrets.COSIGN_KEY_BASE64}}
           COSIGN_PASSWORD: ${{secrets.COSIGN_PASSWORD}}
 
       # # Sign the resulting Docker image digest except on PRs.
